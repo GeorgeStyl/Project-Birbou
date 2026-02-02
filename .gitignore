@@ -1,0 +1,25 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Environments (Anaconda/Venv)
+# ΔΕΝ ανεβάζουμε ποτέ τον φάκελο του περιβάλλοντος!
+venv/
+env/
+django_env/
+
+# Database (SQLite)
+# Συνήθως την αγνοούμε για να μην ανεβάζουμε τοπικά δεδομένα
+db.sqlite3
+
+# OS generated files (Pop!_OS / Linux)
+.DS_Store
+.pyc
+.swp
+
+# VS Code
+.vscode/
+
+# Sensitive Info
+.env
