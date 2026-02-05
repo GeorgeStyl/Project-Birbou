@@ -19,12 +19,13 @@ from django.urls import path
 from django.contrib import admin
 from django.urls import path
 from django.shortcuts import render
-from birbou_app.views import login_view  
+from birbou_app.views import login_view, register_view 
 
 def home(request):
     return render(request, 'login.html')
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', login_view, name='login'), # The primary page is now the login view
+    path('', login_view, name='login'),
+    path('register/', register_view, name='register'), 
 ]
