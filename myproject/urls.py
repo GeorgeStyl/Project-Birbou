@@ -19,12 +19,12 @@ from django.urls import path
 from django.contrib import admin
 from django.urls import path
 from django.shortcuts import render
+from myapp.views import BirbouProject  
 
-# Μια γρήγορη "view" για να βλέπουμε το μενού
 def home(request):
     return render(request, 'base.html')
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', home), # Η αρχική σου σελίδα
+    path('', home), 
 ]
