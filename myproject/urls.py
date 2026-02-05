@@ -19,13 +19,12 @@ from django.urls import path
 from django.contrib import admin
 from django.urls import path
 from django.shortcuts import render
-from birbou_app.views import home
-
+from birbou_app.views import login_view  
 
 def home(request):
-    return render(request, 'base.html')
+    return render(request, 'login.html')
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', home), 
+    path('', login_view, name='login'), # The primary page is now the login view
 ]
