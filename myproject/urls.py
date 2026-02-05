@@ -19,7 +19,8 @@ from django.urls import path
 from django.contrib import admin
 from django.urls import path
 from django.shortcuts import render
-from myapp.views import BirbouProject  
+from birbou_app.views import home
+
 
 def home(request):
     return render(request, 'base.html')
