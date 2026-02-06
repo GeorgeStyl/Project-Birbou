@@ -17,15 +17,23 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, include
 from django.shortcuts import render
-from birbou_app.views import login_view, register_view 
+# from birbou_app.views import login_view, register_view
+from django.shortcuts import redirect
 
-def home(request):
-    return render(request, 'login.html')
+
+# def home(request):
+#     return render(request, 'login.html')  # commented those out, not necessary since accounts app handles login/signup
+
+
+# function that redirects to login page
+def redirect_to_login(request):
+    return redirect("/accounts/login/")
+
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', login_view, name='login'),
-    path('register/', register_view, name='register'), 
+    path('', redirect_to_login),  # root redirects to login page
+    path('accounts/', include('accounts.urls')),  # if you catch accounts/, redirect to account views
 ]
