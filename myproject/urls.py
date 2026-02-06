@@ -15,25 +15,23 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path
-from django.contrib import admin
 from django.urls import path, include
-from django.shortcuts import render
-# from birbou_app.views import login_view, register_view
 from django.shortcuts import redirect
 
 
-# def home(request):
-#     return render(request, 'login.html')  # commented those out, not necessary since accounts app handles login/signup
 
-
-# function that redirects to login page
 def redirect_to_login(request):
     return redirect("/accounts/login/")
 
-
 urlpatterns = [
+    # Django's Admin interface 
     path('admin/', admin.site.urls),
-    path('', redirect_to_login),  # root redirects to login page
-    path('accounts/', include('accounts.urls')),  # if you catch accounts/, redirect to account views
+    
+    # Root 127.0.0.1:8000/
+    path('', redirect_to_login),  
+    
+    path('accounts/', include('accounts.urls')),  
+    
+    # Connect with birbou_app (Home, Courses, etc)
+    path('', include('birbou_app.urls')),
 ]
