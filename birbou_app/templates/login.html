@@ -60,8 +60,21 @@
                 <label class="form-check-label" for="remember">Remember me</label>
             </div>
 
-            <button type="submit" class="btn btn-primary w-100 py-2">Sign In</button>
+            <button type="submit" class="btn btn-primary w-100 py-2 fw-bold">Sign In</button>
+
+            <div class="d-flex align-items-center my-4">
+                <hr class="flex-grow-1">
+                <span class="mx-2 text-muted small fw-bold">OR</span>
+                <hr class="flex-grow-1">
+            </div>
+
+            <a href="{% url 'guest_login' %}" class="btn btn-outline-secondary w-100 py-2">
+                <i class="bi bi-person-badge me-2"></i>Login as Guest
+            </a>
         </form>
+
+
+        
 
         <div class="text-center mt-4">
             <small class="text-muted">Don't have an account? <a href="{% url 'register' %}" class="text-decoration-none">Register</a></small>

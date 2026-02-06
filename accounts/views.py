@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import login, logout
 from django.contrib.auth.forms import AuthenticationForm
-from django.contrib.auth.models import Group
+from django.contrib.auth.models import Group, User 
 from .forms import ExtendedSignupForm 
 
 def signup_view(request):
@@ -15,7 +15,7 @@ def signup_view(request):
             user.groups.add(group)
             
             login(request, user)
-            return redirect('home') # Send into birbou_app
+            return redirect('home')
     else:
         form = ExtendedSignupForm()
     return render(request, "register.html", {"form": form})
@@ -34,3 +34,19 @@ def login_view(request):
 def logout_view(request):
     logout(request)
     return redirect('login') 
+
+def guest_login_view(request):
+    user, created = User.objects.get_or_create(
+        username='guest_visitor',
+        defaults={
+            'first_name': 'Guest',
+            'last_name': 'User',
+            'email': 'guest@example.com'
+        }
+    )
+    
+    guest_group, _ = Group.objects.get_or_create(name='guest')
+    user.groups.add(guest_group)
+
+    login(request, user)
+    return redirect('home')
