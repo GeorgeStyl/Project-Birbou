@@ -1,0 +1,168 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container-fluid px-0">
+    <!-- Cinema Mode Video Player (if video exists) -->
+    {% if lecture.video %}
+    <div class="bg-black py-5">
+        <div class="container">
+            <div class="ratio ratio-16x9 shadow-lg rounded-4 overflow-hidden"
+                style="border: 1px solid rgba(255,255,255,0.1);">
+                <video controls class="w-100 h-100 object-fit-cover">
+                    <source src="{{ lecture.video.url }}" type="video/mp4">
+                    Your browser does not support the video tag.
+                </video>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <div class="container mt-5 mb-5 ps-4 pe-4">
+        <!-- Breadcrumb & Navigation -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb mb-0">
+                    <li class="breadcrumb-item"><a href="{% url 'professor_dashboard' %}"
+                            class="text-decoration-none text-info">Dashboard</a></li>
+                    <li class="breadcrumb-item"><a href="{% url 'course_detail' course.id %}"
+                            class="text-decoration-none text-info">{{ course.title }}</a></li>
+                    <li class="breadcrumb-item active text-secondary" aria-current="page">{{ lecture.title }}</li>
+                </ol>
+            </nav>
+
+            <a href="{% url 'course_detail' course.id %}" class="btn btn-outline-secondary rounded-pill px-3">
+                <i class="bi bi-arrow-left me-2"></i>Back to Course
+            </a>
+        </div>
+
+        <div class="row g-4">
+            <!-- Main Content -->
+            <div class="col-lg-8">
+                <div class="card bg-dark text-white border-0 shadow-sm mb-4" style="border-radius: 15px;">
+                    <div class="card-body p-4">
+                        <div class="d-flex justify-content-between align-items-start mb-3">
+                            <h1 class="fw-bold mb-0 display-6">{{ lecture.title }}</h1>
+                            {% if is_owner %}
+                            <div class="dropdown">
+                                <button class="btn btn-dark btn-sm rounded-circle p-2" type="button"
+                                    data-bs-toggle="dropdown" aria-expanded="false">
+                                    <i class="bi bi-three-dots-vertical"></i>
+                                </button>
+                                <ul class="dropdown-menu dropdown-menu-dark dropdown-menu-end border-0 shadow">
+                                    <li><a class="dropdown-item" href="{% url 'edit_lecture' lecture.id %}"><i
+                                                class="bi bi-pencil me-2"></i>Edit Lecture</a></li>
+                                    <li>
+                                        <hr class="dropdown-divider border-secondary opacity-25">
+                                    </li>
+                                    <li><a class="dropdown-item text-danger"
+                                            href="{% url 'delete_lecture' lecture.id %}"><i
+                                                class="bi bi-trash me-2"></i>Delete</a></li>
+                                </ul>
+                            </div>
+                            {% endif %}
+                        </div>
+
+                        <p class="text-secondary mb-4 fs-5" style="line-height: 1.8;">{{ lecture.description }}</p>
+
+                        <!-- Resources Section -->
+                        {% if lecture.file or lecture.image %}
+                        <hr class="border-secondary opacity-25 my-4">
+                        <h5 class="fw-bold mb-3"><i class="bi bi-paperclip me-2 text-info"></i>Resources</h5>
+                        <div class="d-flex flex-wrap gap-3">
+                            {% if lecture.file %}
+                            <a href="{{ lecture.file.url }}" target="_blank"
+                                class="resource-card p-3 rounded-3 bg-black border border-secondary text-decoration-none d-flex align-items-center mb-2"
+                                style="min-width: 250px;">
+                                <div class="icon-box bg-dark rounded-circle p-2 me-3 d-flex align-items-center justify-content-center"
+                                    style="width: 40px; height: 40px;">
+                                    <i class="bi bi-file-earmark-text text-info fs-5"></i>
+                                </div>
+                                <div>
+                                    <h6 class="mb-0 text-white">Document</h6>
+                                    <small class="text-secondary">Click to download</small>
+                                </div>
+                            </a>
+                            {% endif %}
+
+                            {% if lecture.image %}
+                            <a href="{{ lecture.image.url }}" target="_blank"
+                                class="resource-card p-3 rounded-3 bg-black border border-secondary text-decoration-none d-flex align-items-center mb-2"
+                                style="min-width: 250px;">
+                                <div class="icon-box bg-dark rounded-circle p-2 me-3 d-flex align-items-center justify-content-center"
+                                    style="width: 40px; height: 40px;">
+                                    <i class="bi bi-image text-warning fs-5"></i>
+                                </div>
+                                <div>
+                                    <h6 class="mb-0 text-white">Image Resource</h6>
+                                    <small class="text-secondary">Click to view</small>
+                                </div>
+                            </a>
+                            {% endif %}
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sidebar / Additional Info or Next Lectures -->
+            <div class="col-lg-4">
+                <div class="card bg-dark text-white border-0 shadow-sm" style="border-radius: 15px;">
+                    <div class="card-header bg-transparent border-secondary p-3">
+                        <h5 class="fw-bold mb-0">Course Content</h5>
+                    </div>
+                    <div class="list-group list-group-flush rounded-bottom-4">
+                        {% for other_lecture in course.lectures.all %}
+                        <a href="{% url 'lecture_detail' other_lecture.id %}"
+                            class="list-group-item list-group-item-action bg-dark text-white border-secondary p-3 {% if other_lecture.id == lecture.id %}active-lecture{% endif %}">
+                            <div class="d-flex align-items-center">
+                                <span class="badge bg-secondary rounded-circle me-3"
+                                    style="width: 25px; height: 25px; display: flex; align-items: center; justify-content: center;">
+                                    {{ forloop.counter }}
+                                </span>
+                                <div>
+                                    <h6 class="mb-0">{{ other_lecture.title }}</h6>
+                                    <small class="text-secondary" style="font-size: 0.8rem;">
+                                        {% if other_lecture.video %}
+                                        <i class="bi bi-play-circle me-1"></i>Video
+                                        {% else %}
+                                        <i class="bi bi-file-text me-1"></i>Text
+                                        {% endif %}
+                                    </small>
+                                </div>
+                            </div>
+                        </a>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .active-lecture {
+        background-color: rgba(13, 202, 240, 0.1) !important;
+        border-left: 3px solid #0dcaf0 !important;
+    }
+
+    .list-group-item {
+        transition: all 0.2s ease;
+        border-left: 3px solid transparent;
+    }
+
+    .list-group-item:hover:not(.active-lecture) {
+        background-color: rgba(255, 255, 255, 0.05) !important;
+        padding-left: 1.2rem !important;
+    }
+
+    .resource-card {
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .resource-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        background-color: rgba(255, 255, 255, 0.05) !important;
+    }
+</style>
+{% endblock %}

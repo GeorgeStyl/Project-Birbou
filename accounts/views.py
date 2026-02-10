@@ -15,6 +15,8 @@ def signup_view(request):
             user.groups.add(group)
             
             login(request, user)
+            if role == "professor":
+                return redirect('professor_dashboard')
             return redirect('home')
     else:
         form = ExtendedSignupForm()
@@ -29,6 +31,8 @@ def login_view(request):
         if form.is_valid():
             user = form.get_user()
             login(request, user)
+            if user.groups.filter(name='professor').exists():
+                return redirect('professor_dashboard')
             return redirect('home')
     else:
         form = AuthenticationForm()
