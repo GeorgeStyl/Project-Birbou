@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="el">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <title>{% block title %}Django Pop!_OS{% endblock %}</title>
+    <style>
+        body {
+            background-color: #333333;
+            color: white;
+        }
+
+        .navbar {
+            background-color: #24292e !important;
+        }
+    </style>
+    {% block extra_head %}{% endblock %}
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+        <div class="container-fluid px-5">
+            <a class="navbar-brand fw-bold d-flex align-items-center" href="{% url 'home' %}">
+                <i class="bi bi-mortarboard-fill me-2 fs-4 text-info"></i>
+                <span class="tracking-wide">Birbou<span class="text-info">LMS</span></span>
+            </a>
+
+            <button class="navbar-toggler border-0 shadow-none" type="button" data-bs-toggle="collapse"
+                data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <div class="navbar-nav ms-auto align-items-center gap-3">
+                    {% if user.is_authenticated %}
+                    {% if user.groups.all.0.name == "professor" %}
+                    <a class="nav-link px-3 rounded-pill {% if request.resolver_match.url_name == 'professor_dashboard' %}active-link{% endif %}"
+                        href="{% url 'professor_dashboard' %}">
+                        <i class="bi bi-speedometer2 me-1"></i> Dashboard
+                    </a>
+                    {% else %}
+                    <a class="nav-link px-3 rounded-pill {% if request.resolver_match.url_name == 'home' %}active-link{% endif %}"
+                        href="{% url 'home' %}">
+                        <i class="bi bi-house-door me-1"></i> Home
+                    </a>
+                    {% endif %}
+
+                    <div class="vr text-white opacity-25 mx-2 d-none d-lg-block"></div>
+
+                    <div class="dropdown">
+                        <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" role="button"
+                            data-bs-toggle="dropdown" aria-expanded="false">
+                            <div class="avatar bg-info rounded-circle d-flex align-items-center justify-content-center text-dark fw-bold me-2"
+                                style="width: 35px; height: 35px;">
+                                {{ user.username|slice:":1"|upper }}
+                            </div>
+                            <span class="fw-medium">{{ user.username }}</span>
+                        </a>
+                        <ul
+                            class="dropdown-menu dropdown-menu-dark dropdown-menu-end border-0 shadow-lg mt-3 p-2 rounded-3">
+                            <li><span class="dropdown-header text-uppercase small text-secondary">Signed in as {{
+                                    user_role|default:"User" }}</span></li>
+                            <li>
+                                <hr class="dropdown-divider border-secondary opacity-25">
+                            </li>
+                            <li>
+                                <form action="{% url 'logout' %}" method="post">
+                                    {% csrf_token %}
+                                    <button type="submit" class="dropdown-item rounded-2 text-danger">
+                                        <i class="bi bi-box-arrow-right me-2"></i>Logout
+                                    </button>
+                                </form>
+                            </li>
+                        </ul>
+                    </div>
+                    {% else %}
+                    <a class="nav-link fw-medium" href="{% url 'login' %}">Login</a>
+                    <a class="btn btn-info rounded-pill px-4 fw-bold shadow-sm" href="{% url 'signup' %}">Get
+                        Started</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </nav>
+    <div style="height: 80px;"></div> <!-- Spacer for fixed navbar -->
+
+    <style>
+        .navbar {
+            background: rgba(36, 41, 46, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .tracking-wide {
+            letter-spacing: 0.5px;
+        }
+
+        .nav-link {
+            color: rgba(255, 255, 255, 0.7) !important;
+            transition: all 0.2s ease;
+            position: relative;
+        }
+
+        .nav-link:hover,
+        .nav-link.active-link {
+            color: #fff !important;
+        }
+
+        .nav-link.active-link {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .dropdown-item:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .avatar {
+            font-size: 0.9rem;
+            background: linear-gradient(45deg, #0dcaf0, #0d6efd);
+        }
+    </style>
+
+    {% if messages %}
+    <div class="container mt-3">
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    {% block content %}
+    {% endblock %}
+
+</body>
+
+</html>
