@@ -2,25 +2,25 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import login, logout
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.models import Group, User 
-from .forms import ExtendedSignupForm 
+from .forms import ExtendedSignupForm
+
 
 def signup_view(request):
+    role = None
     if request.method == "POST":
-        form = ExtendedSignupForm(request.POST) 
-        role = request.POST.get("role")
-        
+        form = ExtendedSignupForm(request.POST)
+        role = request.POST.get("role")  # Capture the role from the hidden input
+
         if form.is_valid() and role in ["student", "professor"]:
             user = form.save()
             group = Group.objects.get(name=role)
             user.groups.add(group)
-            
             login(request, user)
-            if role == "professor":
-                return redirect('professor_dashboard')
-            return redirect('home')
+            return redirect('professor_dashboard' if role == "professor" else 'home')
     else:
         form = ExtendedSignupForm()
-    return render(request, "register.html", {"form": form})
+
+    return render(request, "register.html", {"form": form, "role": role})
 
 def login_view(request):
     if request.user.is_authenticated:
