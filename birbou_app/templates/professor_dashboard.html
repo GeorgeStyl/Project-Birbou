@@ -2,39 +2,22 @@
 
 {% block content %}
 <div class="container mt-5">
-    <div class="row">
-        <div class="col-lg-3 mb-4">
-            <div class="card border-0 shadow-sm" style="background-color: #1e1e1e; border-radius: 15px;">
-                <div class="card-header bg-warning text-dark fw-bold" style="border-radius: 15px 15px 0 0;">
-                    <i class="bi bi-lock-fill me-2"></i>Private Courses
+    <div class="row justify-content-center">
+        <div class="col-xl-11">
+
+            {# Header Section #}
+            <div class="d-flex justify-content-between align-items-center mb-5">
+                <div>
+                    <h1 class="text-white fw-bold m-0">Professor Dashboard</h1>
+                    <p class="text-secondary mb-0">Manage your courses and lectures</p>
                 </div>
-                <ul class="list-group list-group-flush" id="private-list">
-                    {% for course in courses %}
-                        {% if not course.is_public %}
-                        <li class="list-group-item bg-dark text-white border-secondary small d-flex justify-content-between align-items-center" id="list-item-{{ course.id }}">
-                            <span class="text-truncate me-2">{{ course.title }}</span>
-                            <span class="badge bg-secondary">Draft</span>
-                        </li>
-                        {% endif %}
-                    {% endfor %}
-
-                    {# FIXED LINE 12/13: Using a more stable display logic #}
-                    <li id="no-private-msg" class="list-group-item bg-dark text-muted small d-none">
-                        No private courses.
-                    </li>
-                </ul>
-            </div>
-        </div>
-
-        <div class="col-lg-9">
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <h2 class="text-white fw-bold">All Courses</h2>
-                <a href="{% url 'upload_course' %}" class="btn btn-primary px-4 shadow">
-                    <i class="bi bi-plus-lg me-2"></i>New Course
+                <a href="{% url 'upload_course' %}" class="btn btn-primary px-4 py-2 fw-bold shadow">
+                    <i class="bi bi-plus-lg me-2"></i>Create New Course
                 </a>
             </div>
 
-            <div class="row row-cols-1 row-cols-md-2 g-4" id="course-grid">
+            {# Course Grid #}
+            <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4" id="course-grid">
                 {% for course in courses %}
                 <div class="col" id="course-card-{{ course.id }}">
                     <div class="card h-100 border-0 shadow-sm" style="background-color: #1e1e1e; color: #ffffff; border-radius: 15px; overflow: hidden;">
@@ -42,15 +25,15 @@
                         {# Image Section #}
                         <div class="position-relative">
                             {% if course.image %}
-                                <img src="{{ course.image.url }}" class="card-img-top" style="height: 160px; width: 100%; object-fit: cover;">
+                                <img src="{{ course.image.url }}" class="card-img-top" alt="{{ course.title }}" style="height: 180px; width: 100%; object-fit: cover;">
                             {% else %}
-                                <div class="bg-dark d-flex align-items-center justify-content-center border-bottom border-secondary" style="height: 160px;">
-                                    <i class="bi bi-journal-code display-4 text-secondary"></i>
+                                <div class="bg-dark d-flex align-items-center justify-content-center border-bottom border-secondary" style="height: 180px;">
+                                    <i class="bi bi-journal-code display-2 text-secondary"></i>
                                 </div>
                             {% endif %}
 
                             {# Switch Overlay #}
-                            <div class="position-absolute top-0 end-0 m-2">
+                            <div class="position-absolute top-0 end-0 m-3">
                                 <div class="form-check form-switch bg-dark bg-opacity-75 px-3 py-1 rounded-pill border border-secondary">
                                     <input class="form-check-input visibility-toggle" type="checkbox"
                                            role="switch" id="switch{{ course.id }}"
@@ -64,9 +47,39 @@
                             </div>
                         </div>
 
-                        <div class="card-body">
-                            <h5 class="card-title text-info mb-1">{{ course.title }}</h5>
-                            <p class="card-text text-secondary small">{{ course.description|truncatewords:10 }}</p>
+                        <div class="card-body p-4">
+                            <div class="d-flex justify-content-between align-items-start mb-3">
+                                <div class="d-flex flex-column">
+                                    <small class="text-secondary fw-semibold">
+                                        <i class="bi bi-clock-history me-1"></i>Updated: {{ course.updated_at|date:"M d, H:i" }}
+                                    </small>
+                                    {# Enrollment Count next to date #}
+                                    <small class="text-info fw-bold mt-1">
+                                        <i class="bi bi-people-fill me-1"></i>{{ course.students.count|default:"0" }} Users
+                                    </small>
+                                </div>
+
+                                <div class="dropdown">
+                                    <button class="btn btn-link text-secondary p-0" type="button" data-bs-toggle="dropdown">
+                                        <i class="bi bi-three-dots-vertical fs-5"></i>
+                                    </button>
+                                    <ul class="dropdown-menu dropdown-menu-dark shadow">
+                                        <li><a class="dropdown-item" href="{% url 'edit_course' course.id %}"><i class="bi bi-pencil-square me-2"></i>Edit</a></li>
+                                        <li><hr class="dropdown-divider border-secondary"></li>
+                                        <li><a class="dropdown-item text-danger" href="{% url 'confirm_delete' course.id %}"><i class="bi bi-trash3 me-2"></i>Delete</a></li>
+                                    </ul>
+                                </div>
+                            </div>
+
+                            <h5 class="card-title fw-bold text-info mb-2">{{ course.title }}</h5>
+                            <p class="card-text text-secondary small mb-0">{{ course.description|truncatewords:12 }}</p>
+                        </div>
+
+                        <div class="card-footer bg-transparent border-top border-secondary p-3">
+                            {# REVERTED ROUTING: Points back to original detail view #}
+                            <a href="{% url 'course_detail' course.id %}" class="btn btn-outline-info btn-sm fw-bold w-100 py-2">
+                                <i class="bi bi-folder2-open me-2"></i>Manage Content
+                            </a>
                         </div>
                     </div>
                 </div>
@@ -76,29 +89,12 @@
     </div>
 </div>
 
-{# JavaScript for Live Toggle and Console Logging #}
 <script>
-// Initial setup to check if the "No private courses" message should be visible
-function updateEmptyMessage() {
-    const privateList = document.getElementById('private-list');
-    const noMsg = document.getElementById('no-private-msg');
-    const items = privateList.querySelectorAll('li:not(#no-private-msg)');
-    if (items.length === 0) {
-        noMsg.classList.remove('d-none');
-    } else {
-        noMsg.classList.add('d-none');
-    }
-}
-
-// Run on page load
-updateEmptyMessage();
-
 document.querySelectorAll('.visibility-toggle').forEach(checkbox => {
     checkbox.addEventListener('change', function() {
         const courseId = this.dataset.courseId;
         const courseTitle = this.dataset.courseTitle;
         const label = document.getElementById(`label${courseId}`);
-        const privateList = document.getElementById('private-list');
 
         fetch(`/course/toggle-visibility/${courseId}/`, {
             method: 'POST',
@@ -110,47 +106,18 @@ document.querySelectorAll('.visibility-toggle').forEach(checkbox => {
         .then(response => response.json())
         .then(data => {
             if (data.status === 'success') {
-                const newState = data.is_public ? 'PUBLIC' : 'PRIVATE';
-
-                // --- CONSOLE LOGGING ---
-                console.log(`%c[COURSE UPDATE] %c${courseTitle} %cis now %c${newState}`,
-                            "color: #0dcaf0; font-weight: bold;",
-                            "color: #ffffff;",
-                            "color: #b0b0b0;",
-                            data.is_public ? "color: #198754; font-weight: bold;" : "color: #ffc107; font-weight: bold;");
-
-                // Update UI Label
                 label.innerText = data.is_public ? 'Public' : 'Private';
-
-                if (!data.is_public) {
-                    // Prepend to private list (adds to the top)
-                    const newItem = document.createElement('li');
-                    newItem.className = "list-group-item bg-dark text-white border-secondary small d-flex justify-content-between align-items-center";
-                    newItem.id = `list-item-${courseId}`;
-                    newItem.style.borderLeft = "4px solid #ffc107";
-                    newItem.innerHTML = `<span class="text-truncate me-2">${courseTitle}</span> <span class="badge bg-secondary">Draft</span>`;
-
-                    privateList.prepend(newItem);
-                } else {
-                    // Remove from private list
-                    const itemToRemove = document.getElementById(`list-item-${courseId}`);
-                    if (itemToRemove) itemToRemove.remove();
-                }
-                updateEmptyMessage();
+                console.log(`[STATE CHANGE] ${courseTitle} is now ${data.is_public ? 'PUBLIC' : 'PRIVATE'}`);
             }
-        })
-        .catch(error => {
-            console.error('Error updating state:', error);
-            this.checked = !this.checked;
         });
     });
 });
 </script>
 
 <style>
+    /* Fixing the stretched hover effect and alignment */
+    .card { transition: transform 0.2s ease, box-shadow 0.2s ease; }
+    .card:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.3) !important; }
     .form-check-input:checked { background-color: #198754; border-color: #198754; }
-    .list-group-item { transition: all 0.3s ease; }
-    .list-group-item:hover { background-color: #252525 !important; }
-    .text-truncate { max-width: 150px; display: inline-block; vertical-align: middle; }
 </style>
 {% endblock %}

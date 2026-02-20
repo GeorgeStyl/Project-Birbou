@@ -6,6 +6,9 @@ from django.http import JsonResponse
 from django.views.decorators.http import require_POST
 from django.shortcuts import get_object_or_404
 from .models import Course
+from django.shortcuts import get_object_or_404, redirect
+from django.contrib.auth.decorators import login_required
+from .models import Course  # Use .models since Course is in this app
 
 
 
@@ -173,13 +176,35 @@ def toggle_course_visibility(request, course_id):
 
 @login_required(login_url='/accounts/login/')
 def professor_dashboard(request):
-    if not request.user.groups.filter(name='professor').exists():
-        return redirect('home')
-
-    # Order by '-updated_at' to put the most recently changed courses at the top
-    # Make sure you have 'updated_at = models.DateTimeField(auto_now=True)' in your Course model
-    all_courses = Course.objects.filter(professor=request.user).order_by('-updated_at')
+    # This matches the new column you just created
+    courses = Course.objects.filter(professor=request.user).order_by('-updated_at')
 
     return render(request, 'professor_dashboard.html', {
-        'courses': all_courses,
+        'courses': courses,
     })
+
+
+@login_required
+def enroll_in_course(request, course_id):
+    # Fetch the course
+    course = get_object_or_404(Course, id=course_id)
+
+    # Check if the user is already enrolled
+    if request.user not in course.students.all():
+        course.students.add(request.user)
+        # We call save() to trigger the 'updated_at' timestamp
+        # so it jumps to the top of your dashboard
+        course.save()
+
+    return redirect('course_detail', course_id=course.id)
+
+
+@login_required
+def unenroll_from_course(request, course_id):
+    course = get_object_or_404(Course, id=course_id)
+
+    if request.user in course.students.all():
+        course.students.remove(request.user)
+        course.save()
+
+    return redirect('professor_dashboard')
