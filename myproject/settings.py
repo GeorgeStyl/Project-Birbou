@@ -53,10 +53,13 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'myproject.urls'
 
+# settings.py
+
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],  
+        # This explicitly tells Django where to look for base.html
+        'DIRS': [BASE_DIR / 'birbou_app' / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -64,7 +67,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
-                "accounts.context_processors.auth_status",   # ADDED
+                "accounts.context_processors.auth_status",
             ],
         },
     },

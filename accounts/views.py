@@ -1,8 +1,9 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import login, logout
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.models import Group, User 
 from .forms import ExtendedSignupForm
+from django.contrib.auth.decorators import login_required
 
 
 def signup_view(request):
@@ -57,3 +58,4 @@ def guest_login_view(request):
 
     login(request, user)
     return redirect('home')
+
