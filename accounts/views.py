@@ -59,4 +59,3 @@ def guest_login_view(request):
     login(request, user)
     return redirect('home')
 
-

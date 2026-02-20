@@ -208,3 +208,8 @@ def unenroll_from_course(request, course_id):
         course.save()
 
     return redirect('professor_dashboard')
+
+def home_view(request):
+    # Only show public courses to students/guests
+    public_courses = Course.objects.filter(is_public=True).order_by('-updated_at')
+    return render(request, 'home.html', {'courses': public_courses})
