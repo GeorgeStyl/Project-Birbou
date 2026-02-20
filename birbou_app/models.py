@@ -7,7 +7,14 @@ class Course(models.Model):
     title = models.CharField(max_length=200)
     description = models.TextField()
     professor = models.ForeignKey(User, on_delete=models.CASCADE, related_name='courses')
+    image = models.ImageField(upload_to='courses/', null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
+    is_public = models.BooleanField(default=False)
+    updated_at = models.DateTimeField(auto_now=True)  # This is key for the "Last Private = First" rule
+
+    class Meta:
+        ordering = ['-updated_at']  # Always serves the most recently updated courses first
+
 
     def __str__(self):
         return self.title

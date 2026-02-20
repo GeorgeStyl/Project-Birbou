@@ -3,6 +3,7 @@ import django
 import random
 from datetime import datetime
 
+
 # Setup Django environment
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'myproject.settings')
 django.setup()
@@ -17,7 +18,7 @@ def seed():
     print("Clearing existing data...")
     Lecture.objects.all().delete()
     Course.objects.all().delete()
-    
+
     # Create Groups
     print("Creating groups...")
     prof_group, _ = Group.objects.get_or_create(name='professor')
@@ -51,22 +52,26 @@ def seed():
         {
             "title": "Introduction to Algorithms",
             "description": "A fundamental course on algorithmic thinking and complexity analysis.",
-            "professor": prof1
+            "professor": prof1,
+            "image": "courses/introduction_to_algorithms.png"
         },
         {
             "title": "Artificial Intelligence",
             "description": "Exploring the basics of AI, machine learning, and neural networks.",
-            "professor": prof1
+            "professor": prof1,
+            "image": "courses/artificial_intelligence.png"
         },
         {
             "title": "Web Development with Django",
             "description": "Building robust web applications using the Django framework.",
-            "professor": prof1
+            "professor": prof1,
+            "image": "courses/django.png"
         },
         {
             "title": "Database Systems",
             "description": "Design and implementation of database management systems.",
-            "professor": prof1
+            "professor": prof1,
+            "image": "courses/database.png"
         }
     ]
 
@@ -74,12 +79,13 @@ def seed():
         course = Course.objects.create(
             title=data["title"],
             description=data["description"],
-            professor=data["professor"]
+            professor=data["professor"],
+            image=data["image"]
         )
-        
+
         print(f"  Created course: {course.title}")
-        
-        
+
+
         for i in range(1, 6):
             Lecture.objects.create(
                 course=course,

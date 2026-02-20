@@ -2,6 +2,12 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from .models import Course, Lecture
 from .forms import CourseForm, LectureForm
+from django.http import JsonResponse
+from django.views.decorators.http import require_POST
+from django.shortcuts import get_object_or_404
+from .models import Course
+
+
 
 @login_required(login_url='/accounts/login/')
 def home_view(request):
@@ -20,19 +26,20 @@ def professor_dashboard(request):
         'course_form': course_form
     })
 
-@login_required(login_url='/accounts/login/')
-def create_course(request):
-    if not request.user.groups.filter(name='professor').exists():
-        return redirect('home')
-    
-    if request.method == 'POST':
-        form = CourseForm(request.POST)
-        if form.is_valid():
-            course = form.save(commit=False)
-            course.professor = request.user
-            course.save()
-            return redirect('professor_dashboard')
-    return redirect('professor_dashboard')
+# Reolaced by upload_course
+# @login_required(login_url='/accounts/login/')
+# def create_course(request):
+#     if not request.user.groups.filter(name='professor').exists():
+#         return redirect('home')
+#
+#     if request.method == 'POST':
+#         form = CourseForm(request.POST)
+#         if form.is_valid():
+#             course = form.save(commit=False)
+#             course.professor = request.user
+#             course.save()
+#             return redirect('professor_dashboard')
+#     return redirect('professor_dashboard')
 
 @login_required(login_url='/accounts/login/')
 def course_detail(request, course_id):
@@ -134,7 +141,45 @@ def lecture_detail(request, lecture_id):
         'is_owner': is_owner
     })
 
+
 @login_required(login_url='/accounts/login/')
 def upload_course(request):
-    # Deprecated/Redirect to dashboard since we use modal now
-    return redirect('professor_dashboard')
+    if not request.user.groups.filter(name='professor').exists():
+        return redirect('home')
+
+    if request.method == 'POST':
+        # Added request.FILES so images actually upload
+        form = CourseForm(request.POST, request.FILES)
+        if form.is_valid():
+            course = form.save(commit=False)
+            course.professor = request.user
+            course.save()
+            return redirect('professor_dashboard')
+    else:
+        form = CourseForm()
+
+    return render(request, 'upload_course.html', {'form': form})
+
+
+# You can now delete the old 'def create_course' to avoid confusion.
+
+@require_POST
+def toggle_course_visibility(request, course_id):
+    course = get_object_or_404(Course, id=course_id, professor=request.user)
+    course.is_public = not course.is_public
+    course.save()
+    return JsonResponse({'status': 'success', 'is_public': course.is_public})
+
+
+@login_required(login_url='/accounts/login/')
+def professor_dashboard(request):
+    if not request.user.groups.filter(name='professor').exists():
+        return redirect('home')
+
+    # Order by '-updated_at' to put the most recently changed courses at the top
+    # Make sure you have 'updated_at = models.DateTimeField(auto_now=True)' in your Course model
+    all_courses = Course.objects.filter(professor=request.user).order_by('-updated_at')
+
+    return render(request, 'professor_dashboard.html', {
+        'courses': all_courses,
+    })
