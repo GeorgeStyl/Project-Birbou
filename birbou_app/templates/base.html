@@ -25,7 +25,8 @@
 <body>
     <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
         <div class="container-fluid px-5">
-            <a class="navbar-brand fw-bold d-flex align-items-center" href="{% url 'home' %}">
+            <a class="navbar-brand fw-bold d-flex align-items-center"
+                href="{% if user.is_authenticated %}{% if user.groups.all.0.name == 'professor' %}{% url 'professor_dashboard' %}{% else %}{% url 'home' %}{% endif %}{% else %}{% url 'login' %}{% endif %}">
                 <i class="bi bi-mortarboard-fill me-2 fs-4 text-info"></i>
                 <span class="tracking-wide">Birbou<span class="text-info">LMS</span></span>
             </a>
@@ -68,6 +69,13 @@
                             <li>
                                 <hr class="dropdown-divider border-secondary opacity-25">
                             </li>
+                            {% if user.is_staff or user.is_superuser %}
+                            <li>
+                                <a class="dropdown-item rounded-2" href="{% url 'admin:index' %}">
+                                    <i class="bi bi-shield-lock me-2"></i>Admin Panel
+                                </a>
+                            </li>
+                            {% endif %}
                             <li>
                                 <form action="{% url 'logout' %}" method="post">
                                     {% csrf_token %}
@@ -80,7 +88,7 @@
                     </div>
                     {% else %}
                     <a class="nav-link fw-medium" href="{% url 'login' %}">Login</a>
-                    <a class="btn btn-info rounded-pill px-4 fw-bold shadow-sm" href="{% url 'signup' %}">Get
+                    <a class="btn btn-info rounded-pill px-4 fw-bold shadow-sm" href="{% url 'register' %}">Get
                         Started</a>
                     {% endif %}
                 </div>
