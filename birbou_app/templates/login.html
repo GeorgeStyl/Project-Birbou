@@ -40,17 +40,35 @@
             <p class="text-muted">Please enter your details</p>
         </div>
 
-        <form method="POST">
+      <form method="POST">
         {% csrf_token %}
+
+        {% if form.non_field_errors %}
+            <div class="alert alert-danger shadow-sm py-2">
+                {% for error in form.non_field_errors %}
+                    <small class="fw-bold">{{ error }}</small>
+                {% endfor %}
+            </div>
+        {% endif %}
 
         <div class="mb-3">
             <label for="id_username" class="form-label text-secondary fw-semibold">Username</label>
-            <input type="text" name="username" class="form-control" id="id_username" placeholder="Enter username" required>
+            <input type="text" name="username" class="form-control {% if form.username.errors %}is-invalid{% endif %}"
+                   id="id_username" placeholder="Enter username" required>
+
+            {% if form.username.errors %}
+                <div class="invalid-feedback">{{ form.username.errors|striptags }}</div>
+            {% endif %}
         </div>
 
         <div class="mb-3">
             <label for="id_password" class="form-label text-secondary fw-semibold">Password</label>
-            <input type="password" name="password" class="form-control" id="id_password" placeholder="••••••••" required>
+            <input type="password" name="password" class="form-control {% if form.password.errors %}is-invalid{% endif %}"
+                   id="id_password" placeholder="••••••••" required>
+
+            {% if form.password.errors %}
+                <div class="invalid-feedback">{{ form.password.errors|striptags }}</div>
+            {% endif %}
         </div>
 
         <div class="mb-3 form-check">
@@ -59,16 +77,6 @@
         </div>
 
         <button type="submit" class="btn btn-primary w-100 py-2 fw-bold shadow-sm">Sign In</button>
-
-        <div class="d-flex align-items-center my-4">
-            <hr class="flex-grow-1 text-muted">
-            <span class="mx-2 text-muted small fw-bold">OR</span>
-            <hr class="flex-grow-1 text-muted">
-        </div>
-
-        <a href="{% url 'guest_login' %}" class="btn btn-outline-secondary w-100 py-2 border-2">
-            <i class="bi bi-person-badge me-2"></i>Login as Guest
-        </a>
     </form>
 
 
