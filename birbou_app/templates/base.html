@@ -15,6 +15,9 @@
             background-color: #121212; /* Pop!_OS Darker Background */
             color: #ffffff;
             font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
         }
 
         .navbar {
@@ -46,14 +49,19 @@
             background-color: #1e1e1e;
             border: 1px solid rgba(255,255,255,0.1);
         }
+
+        main {
+            flex: 1; /* Allows main to take up available space */
+        }
     </style>
     {% block extra_head %}{% endblock %}
 </head>
 
 <body>
-    <nav class="navbar navbar-expand-lg navbar-dark fixed-top shadow-sm">
+       <nav class="navbar navbar-expand-lg navbar-dark fixed-top shadow-sm">
         <div class="container-fluid px-5">
-            <a class="navbar-brand fw-bold d-flex align-items-center" href="/">
+            <a class="navbar-brand fw-bold d-flex align-items-center"
+               href="{% if user.is_authenticated and user.groups.all.0.name == 'professor' %}{% url 'professor_dashboard' %}{% else %}{% url 'home' %}{% endif %}">
                 <i class="bi bi-mortarboard-fill me-2 fs-4 text-info"></i>
                 <span class="tracking-wide">Birbou<span class="text-info">LMS</span></span>
             </a>
@@ -122,13 +130,9 @@
     </div>
     {% endif %}
 
-    <main>
+    <main class="mb-5">
         {% block content %}{% endblock %}
     </main>
-
-    <footer class="mt-5 py-4 text-center text-secondary border-top border-secondary border-opacity-25">
-        <small>&copy; 2026 Birbou LMS - Powered by Pop!_OS Aesthetics</small>
-    </footer>
 
 </body>
 </html>
