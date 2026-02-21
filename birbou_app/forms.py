@@ -4,11 +4,14 @@ from .models import Course, Lecture
 class CourseForm(forms.ModelForm):
     class Meta:
         model = Course
-        fields = ['title', 'description', 'is_public']
+        fields = ['title', 'description', 'image', 'is_public', 'password']
         widgets = {
-            'title': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Course Title'}),
-            'description': forms.Textarea(attrs={'class': 'form-control', 'placeholder': 'Course Description', 'rows': 4}),
+            'password': forms.PasswordInput(render_value=True, attrs={
+                'class': 'form-control bg-dark text-white border-secondary',
+                'placeholder': 'Optional Password'
+            }),
         }
+
 
 class LectureForm(forms.ModelForm):
     class Meta:
