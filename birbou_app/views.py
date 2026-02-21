@@ -14,7 +14,8 @@ from .models import Course  # Use .models since Course is in this app
 
 @login_required(login_url='/accounts/login/')
 def home_view(request):
-    return render(request, 'home.html')
+    public_courses = Course.objects.filter(is_public=True)
+    return render(request, 'home.html', {'courses': public_courses})
 
 @login_required(login_url='/accounts/login/')
 def professor_dashboard(request):
@@ -47,14 +48,28 @@ def professor_dashboard(request):
 @login_required(login_url='/accounts/login/')
 def course_detail(request, course_id):
     course = get_object_or_404(Course, id=course_id)
-    
-    # Check permission (only professor can edit, everyone can view? Or just professor? Assuming privacy based on user request "professor can upload")
-    # For now, let's allow students to view if enrolled (future), but currently just professor view for management.
-    # User said "Professors upload". Implicitly students view.
-    # But let's restrict editing to the course owner.
-    
     is_owner = course.professor == request.user
-    
+
+    # 1. Password Logic for non-owners
+    if not is_owner and course.password:
+        session_key = f'course_unlocked_{course.id}'
+
+        # Check if they are submitting the password
+        if request.method == 'POST' and 'course_password' in request.POST:
+            entered_password = request.POST.get('course_password')
+            if entered_password == course.password:
+                request.session[session_key] = True  # Unlock for this session
+            else:
+                return render(request, 'course_password_prompt.html', {
+                    'course': course,
+                    'error': 'Invalid password. Please try again.'
+                })
+
+        # Redirect to password prompt if not unlocked yet
+        if not request.session.get(session_key):
+            return render(request, 'course_password_prompt.html', {'course': course})
+
+    # 2. Existing Lecture Logic (Only owner can add lectures)
     if request.method == 'POST' and is_owner:
         form = LectureForm(request.POST, request.FILES)
         if form.is_valid():

@@ -10,6 +10,7 @@ class Course(models.Model):
     title = models.CharField(max_length=200)
     description = models.TextField()
     image = models.ImageField(upload_to='courses/', blank=True, null=True)
+    password = models.CharField(max_length=128, blank=True, null=True, help_text="Optional password to access the course")
     professor = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,

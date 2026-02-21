@@ -3,7 +3,6 @@ import django
 import random
 from datetime import datetime
 
-
 # Setup Django environment
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'myproject.settings')
 django.setup()
@@ -46,57 +45,69 @@ def seed():
         student1.save()
         student1.groups.add(student_group)
 
-    # Create Courses
+    # Create Courses with Optional Passwords
     print("Creating courses...")
     courses_data = [
         {
             "title": "Introduction to Algorithms",
             "description": "A fundamental course on algorithmic thinking and complexity analysis.",
             "professor": prof1,
-            "image": "courses/introduction_to_algorithms.png"
+            "image": "courses/introduction_to_algorithms.png",
+            "password": "algo_secret_2026", # Added Password
+            "is_public": True
         },
         {
             "title": "Artificial Intelligence",
             "description": "Exploring the basics of AI, machine learning, and neural networks.",
             "professor": prof1,
-            "image": "courses/artificial_intelligence.png"
+            "image": "courses/artificial_intelligence.png",
+            "password": "ai_mastery_99",    # Added Password
+            "is_public": True
         },
         {
             "title": "Web Development with Django",
             "description": "Building robust web applications using the Django framework.",
             "professor": prof1,
-            "image": "courses/django.png"
+            "image": "courses/django.png",
+            "password": None,
+            "is_public": True
         },
         {
             "title": "Database Systems",
             "description": "Design and implementation of database management systems.",
             "professor": prof1,
-            "image": "courses/database.png"
+            "image": "courses/database.png",
+            "password": None,
+            "is_public": True
         }
     ]
 
+    print("\n--- Protected Course List ---")
     for data in courses_data:
         course = Course.objects.create(
             title=data["title"],
             description=data["description"],
             professor=data["professor"],
-            image=data["image"]
+            image=data["image"],
+            password=data.get("password"), # Assign password here
+            is_public=data.get("is_public", False)
         )
 
-        print(f"  Created course: {course.title}")
-
+        # Print the course name and password if it exists
+        status = f"Locked (🔑: {course.password})" if course.password else "Open Access"
+        print(f"Course: {course.title.ljust(30)} | Status: {status}")
 
         for i in range(1, 6):
             Lecture.objects.create(
                 course=course,
                 title=f"Lecture {i}: {course.title} Part {i}",
-                description=f"This is the detailed description for lecture {i} of {course.title}. In this lecture, we cover advanced topics and practical examples related to the course subject matter."
+                description=f"Detailed description for lecture {i} of {course.title}."
             )
 
-    print("✅ Seeding completed successfully!")
+    print("\n✅ Seeding completed successfully!")
     print("\nUsers created/verified (password: password123):")
     print("- Professor: prof_turing")
-    print("- Student: student_ada")
+    print("- Student:   student_ada")
 
 if __name__ == '__main__':
     seed()
