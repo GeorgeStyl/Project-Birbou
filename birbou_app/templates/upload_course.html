@@ -13,33 +13,33 @@
                         {% csrf_token %}
 
                         {% for field in form %}
-                            <div class="mb-4">
-                                {% if field.name == 'is_public' %}
-                                    {# This is the fixed Switch section #}
-                                    <div class="bg-dark p-3 rounded border border-secondary">
-                                        <div class="form-check form-switch d-flex align-items-center">
-                                            {{ field }}
-                                            <label class="form-check-label fw-bold ms-3" for="{{ field.id_for_label }}">
-                                                <i class="bi bi-eye-fill me-2"></i>Make this course Public
-                                            </label>
-                                        </div>
-                                        <small class="text-muted d-block mt-2 ms-5">
-                                            If enabled, students will be able to see and enroll in this course.
-                                        </small>
-                                    </div>
-                                {% else %}
-                                    <label for="{{ field.id_for_label }}" class="form-label fw-bold text-secondary">
-                                        {{ field.label }}
-                                    </label>
+                        <div class="mb-4" id="wrapper-{{ field.name }}">
+                            {% if field.name == 'is_public' %}
+                            {# This is the fixed Switch section #}
+                            <div class="bg-dark p-3 rounded border border-secondary">
+                                <div class="form-check form-switch d-flex align-items-center">
                                     {{ field }}
-                                {% endif %}
-
-                                {% if field.errors %}
-                                    <div class="text-danger small mt-1">
-                                        {{ field.errors|striptags }}
-                                    </div>
-                                {% endif %}
+                                    <label class="form-check-label fw-bold ms-3" for="{{ field.id_for_label }}">
+                                        <i class="bi bi-eye-fill me-2"></i>Make this course Public
+                                    </label>
+                                </div>
+                                <small class="text-muted d-block mt-2 ms-5">
+                                    If enabled, students will be able to see and enroll in this course.
+                                </small>
                             </div>
+                            {% else %}
+                            <label for="{{ field.id_for_label }}" class="form-label fw-bold text-secondary">
+                                {{ field.label }}
+                            </label>
+                            {{ field }}
+                            {% endif %}
+
+                            {% if field.errors %}
+                            <div class="text-danger small mt-1">
+                                {{ field.errors|striptags }}
+                            </div>
+                            {% endif %}
+                        </div>
                         {% endfor %}
 
                         <div class="d-flex justify-content-between mt-5">
@@ -64,10 +64,12 @@
         border-color: #555;
         cursor: pointer;
     }
+
     .form-switch .form-check-input:checked {
         background-color: #0dcaf0;
         border-color: #0dcaf0;
     }
+
     .form-control:focus {
         background-color: #252525 !important;
         color: white !important;
@@ -86,6 +88,32 @@
     const switchInput = document.querySelector('input[type="checkbox"]');
     if (switchInput) {
         switchInput.classList.add('form-check-input');
+        switchInput.id = 'is_public_checkbox'; // Ensure we can grab it specifically
     }
+
+    // Dynamic Password Field Logic
+    document.addEventListener("DOMContentLoaded", function () {
+        const publicCheckbox = document.getElementById('is_public_checkbox');
+        const passwordWrapper = document.getElementById('wrapper-password');
+        const passwordInput = document.querySelector('input[name="password"]');
+
+        function togglePasswordField() {
+            if (publicCheckbox.checked) {
+                passwordWrapper.style.display = 'none';
+                passwordInput.value = ''; // Clear value so it doesn't accidentally save
+            } else {
+                passwordWrapper.style.display = 'block';
+            }
+        }
+
+        if (publicCheckbox && passwordWrapper) {
+            // Check initial state
+            togglePasswordField();
+
+            // Listen for changes
+            publicCheckbox.addEventListener('change', togglePasswordField);
+        }
+    });
+
 </script>
 {% endblock %}

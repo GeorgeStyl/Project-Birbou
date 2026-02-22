@@ -1,5 +1,5 @@
 from django import forms
-from .models import Course, Lecture
+from .models import Course, Lecture, Review
 
 class CourseForm(forms.ModelForm):
     class Meta:
@@ -23,4 +23,17 @@ class LectureForm(forms.ModelForm):
             'file': forms.FileInput(attrs={'class': 'form-control'}),
             'video': forms.FileInput(attrs={'class': 'form-control'}),
             'image': forms.FileInput(attrs={'class': 'form-control'}),
+        }
+
+class ReviewForm(forms.ModelForm):
+    class Meta:
+        model = Review
+        fields = ['rating', 'comment']
+        widgets = {
+            'rating': forms.Select(attrs={'class': 'form-select bg-dark text-white border-secondary'}),
+            'comment': forms.Textarea(attrs={
+                'class': 'form-control bg-dark text-white border-secondary', 
+                'placeholder': 'Leave a review... (Optional)',
+                'rows': 3
+            })
         }

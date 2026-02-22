@@ -20,28 +20,31 @@
             <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4" id="course-grid">
                 {% for course in courses %}
                 <div class="col" id="course-card-{{ course.id }}">
-                    <div class="card h-100 border-0 shadow-sm" style="background-color: #1e1e1e; color: #ffffff; border-radius: 15px; overflow: hidden;">
+                    <div class="card h-100 border-0 shadow-sm"
+                        style="background-color: #1e1e1e; color: #ffffff; border-radius: 15px; overflow: hidden;">
 
                         {# Image Section #}
                         <div class="position-relative">
                             {% if course.image %}
-                                <img src="{{ course.image.url }}" class="card-img-top" alt="{{ course.title }}" style="height: 180px; width: 100%; object-fit: cover;">
+                            <img src="{{ course.image.url }}" class="card-img-top" alt="{{ course.title }}"
+                                style="height: 180px; width: 100%; object-fit: cover;">
                             {% else %}
-                                <div class="bg-dark d-flex align-items-center justify-content-center border-bottom border-secondary" style="height: 180px;">
-                                    <i class="bi bi-journal-code display-2 text-secondary"></i>
-                                </div>
+                            <div class="bg-dark d-flex align-items-center justify-content-center border-bottom border-secondary"
+                                style="height: 180px;">
+                                <i class="bi bi-journal-code display-2 text-secondary"></i>
+                            </div>
                             {% endif %}
 
                             {# Switch Overlay #}
                             <div class="position-absolute top-0 end-0 m-3">
-                                <div class="form-check form-switch bg-dark bg-opacity-75 px-3 py-1 rounded-pill border border-secondary">
-                                    <input class="form-check-input visibility-toggle" type="checkbox"
-                                           role="switch" id="switch{{ course.id }}"
-                                           data-course-id="{{ course.id }}"
-                                           data-course-title="{{ course.title }}"
-                                           {% if course.is_public %}checked{% endif %}>
-                                    <label class="form-check-label text-white small fw-bold ms-1" for="switch{{ course.id }}">
-                                        <span id="label{{ course.id }}">{% if course.is_public %}Public{% else %}Private{% endif %}</span>
+                                <div
+                                    class="form-check form-switch bg-dark bg-opacity-75 px-3 py-1 rounded-pill border border-secondary">
+                                    <input class="form-check-input visibility-toggle" type="checkbox" role="switch"
+                                        id="switch{{ course.id }}" data-course-id="{{ course.id }}"
+                                        data-course-title="{{ course.title }}" {{ course.is_public|yesno:"checked," }}>
+                                    <label class="form-check-label text-white small fw-bold ms-1"
+                                        for="switch{{ course.id }}">
+                                        <span id="label{{ course.id }}">{{ course.is_public|yesno:"Public,Private" }}</span>
                                     </label>
                                 </div>
                             </div>
@@ -51,22 +54,30 @@
                             <div class="d-flex justify-content-between align-items-start mb-3">
                                 <div class="d-flex flex-column">
                                     <small class="text-secondary fw-semibold">
-                                        <i class="bi bi-clock-history me-1"></i>Updated: {{ course.updated_at|date:"M d, H:i" }}
+                                        <i class="bi bi-clock-history me-1"></i>Updated:
+                                        {{ course.updated_at|date:"M d, H:i" }}
                                     </small>
                                     {# Enrollment Count next to date #}
                                     <small class="text-info fw-bold mt-1">
-                                        <i class="bi bi-people-fill me-1"></i>{{ course.students.count|default:"0" }} Users
+                                        <i class="bi bi-people-fill me-1"></i>
+                                        {{ course.students.count|default:"0" }} Users
                                     </small>
                                 </div>
 
                                 <div class="dropdown">
-                                    <button class="btn btn-link text-secondary p-0" type="button" data-bs-toggle="dropdown">
+                                    <button class="btn btn-link text-secondary p-0" type="button"
+                                        data-bs-toggle="dropdown">
                                         <i class="bi bi-three-dots-vertical fs-5"></i>
                                     </button>
                                     <ul class="dropdown-menu dropdown-menu-dark shadow">
-                                        <li><a class="dropdown-item" href="{% url 'edit_course' course.id %}"><i class="bi bi-pencil-square me-2"></i>Edit</a></li>
-                                        <li><hr class="dropdown-divider border-secondary"></li>
-                                        <li><a class="dropdown-item text-danger" href="{% url 'confirm_delete' course.id %}"><i class="bi bi-trash3 me-2"></i>Delete</a></li>
+                                        <li><a class="dropdown-item" href="{% url 'edit_course' course.id %}"><i
+                                                    class="bi bi-pencil-square me-2"></i>Edit</a></li>
+                                        <li>
+                                            <hr class="dropdown-divider border-secondary">
+                                        </li>
+                                        <li><a class="dropdown-item text-danger"
+                                                href="{% url 'confirm_delete' course.id %}"><i
+                                                    class="bi bi-trash3 me-2"></i>Delete</a></li>
                                     </ul>
                                 </div>
                             </div>
@@ -77,7 +88,8 @@
 
                         <div class="card-footer bg-transparent border-top border-secondary p-3">
                             {# REVERTED ROUTING: Points back to original detail view #}
-                            <a href="{% url 'course_detail' course.id %}" class="btn btn-outline-info btn-sm fw-bold w-100 py-2">
+                            <a href="{% url 'course_detail' course.id %}"
+                                class="btn btn-outline-info btn-sm fw-bold w-100 py-2">
                                 <i class="bi bi-folder2-open me-2"></i>Manage Content
                             </a>
                         </div>
@@ -89,35 +101,157 @@
     </div>
 </div>
 
-<script>
-document.querySelectorAll('.visibility-toggle').forEach(checkbox => {
-    checkbox.addEventListener('change', function() {
-        const courseId = this.dataset.courseId;
-        const courseTitle = this.dataset.courseTitle;
-        const label = document.getElementById(`label${courseId}`);
+<!-- Password Modal -->
+<div class="modal fade" id="passwordModal" tabindex="-1" aria-labelledby="passwordModalLabel" aria-hidden="true"
+    data-bs-theme="dark">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content bg-dark text-white border-secondary">
+            <div class="modal-header border-secondary">
+                <h5 class="modal-title" id="passwordModalLabel"><i class="bi bi-lock-fill me-2 text-warning"></i>Make
+                    Course Private</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                    aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p class="text-secondary small">Set a password for your course. Students will need this password to
+                    unlock it.</p>
+                <div class="mb-3">
+                    <label for="coursePasswordInput" class="form-label text-info fw-bold">Course Password</label>
+                    <input type="password" class="form-control bg-dark text-white border-secondary"
+                        id="coursePasswordInput" placeholder="Enter password">
+                </div>
+            </div>
+            <div class="modal-footer border-secondary">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-warning fw-bold text-dark" id="savePasswordBtn">Set
+                    Password</button>
+            </div>
+        </div>
+    </div>
+</div>
 
-        fetch(`/course/toggle-visibility/${courseId}/`, {
-            method: 'POST',
-            headers: {
-                'X-CSRFToken': '{{ csrf_token }}',
-                'Content-Type': 'application/json'
+<script>
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
             }
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.status === 'success') {
-                label.innerText = data.is_public ? 'Public' : 'Private';
-                console.log(`[STATE CHANGE] ${courseTitle} is now ${data.is_public ? 'PUBLIC' : 'PRIVATE'}`);
+        }
+        return cookieValue;
+    }
+
+    let currentCourseId = null;
+    let currentCheckbox = null;
+    let currentLabel = null;
+    let currentCourseTitle = null;
+
+    let passwordModal;
+    document.addEventListener('DOMContentLoaded', function () {
+        passwordModal = new bootstrap.Modal(document.getElementById('passwordModal'));
+    });
+
+    const savePasswordBtn = document.getElementById('savePasswordBtn');
+    const passwordInput = document.getElementById('coursePasswordInput');
+
+    document.querySelectorAll('.visibility-toggle').forEach(checkbox => {
+        checkbox.addEventListener('change', function () {
+            currentCourseId = this.dataset.courseId;
+            currentCourseTitle = this.dataset.courseTitle;
+            currentLabel = document.getElementById(`label${currentCourseId}`);
+            currentCheckbox = this;
+
+            const isMakingPublic = this.checked;
+
+            if (!isMakingPublic) {
+                // Switching to Private -> Ask for password
+                this.checked = true; // Revert switch visually until password is saved
+                passwordInput.value = ''; // Clear old input
+                passwordModal.show();
+            } else {
+                // Switching to Public -> Do it immediately
+                toggleVisibilityAPI(currentCourseId, currentCourseTitle, true, '', currentCheckbox, currentLabel);
             }
         });
     });
-});
+
+    savePasswordBtn.addEventListener('click', function () {
+        const password = passwordInput.value;
+        if (!password) {
+            alert('Please enter a password to make the course private.');
+            return;
+        }
+
+        // Disable button while fetching
+        const originalText = savePasswordBtn.innerText;
+        savePasswordBtn.innerText = 'Saving...';
+        savePasswordBtn.disabled = true;
+
+        toggleVisibilityAPI(currentCourseId, currentCourseTitle, false, password, currentCheckbox, currentLabel)
+            .then(success => {
+                if (success) {
+                    passwordModal.hide();
+                }
+            })
+            .finally(() => {
+                savePasswordBtn.innerText = originalText;
+                savePasswordBtn.disabled = false;
+            });
+    });
+
+    function toggleVisibilityAPI(courseId, courseTitle, isPublic, password, checkbox, label) {
+        const csrftoken = getCookie('csrftoken');
+
+        return fetch(`/course/toggle-visibility/${courseId}/`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': csrftoken,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                is_public: isPublic,
+                password: password
+            })
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    checkbox.checked = data.is_public;
+                    label.innerText = data.is_public ? 'Public' : 'Private';
+                    console.log(`[STATE CHANGE] ${courseTitle} is now ${data.is_public ? 'PUBLIC' : 'PRIVATE'}`);
+                    return true;
+                } else {
+                    alert(data.message || 'Error occurred while changing visibility.');
+                    return false;
+                }
+            })
+            .catch(err => {
+                console.error('Fetch error:', err);
+                checkbox.checked = !isPublic; // Revert to whatever it was trying to change to
+                return false;
+            });
+    }
 </script>
 
 <style>
     /* Fixing the stretched hover effect and alignment */
-    .card { transition: transform 0.2s ease, box-shadow 0.2s ease; }
-    .card:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.3) !important; }
-    .form-check-input:checked { background-color: #198754; border-color: #198754; }
+    .card {
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3) !important;
+    }
+
+    .form-check-input:checked {
+        background-color: #198754;
+        border-color: #198754;
+    }
 </style>
 {% endblock %}
