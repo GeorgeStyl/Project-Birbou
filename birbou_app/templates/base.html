@@ -9,10 +9,11 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
     <title>{% block title %}Birbou LMS{% endblock %}</title>
-    
+
     <style>
         body {
-            background-color: #121212; /* Pop!_OS Darker Background */
+            background-color: #121212;
+            /* Pop!_OS Darker Background */
             color: #ffffff;
             font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
             min-height: 100vh;
@@ -36,8 +37,10 @@
             transition: all 0.2s ease;
         }
 
-        .nav-link:hover, .nav-link.active-link {
-            color: #0dcaf0 !important; /* Birbou Cyan */
+        .nav-link:hover,
+        .nav-link.active-link {
+            color: #0dcaf0 !important;
+            /* Birbou Cyan */
         }
 
         .avatar {
@@ -47,70 +50,101 @@
 
         .dropdown-menu-dark {
             background-color: #1e1e1e;
-            border: 1px solid rgba(255,255,255,0.1);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .hover-info {
+            transition: color 0.2s ease;
+        }
+
+        .hover-info:hover,
+        .hover-info:focus {
+            color: #0dcaf0 !important;
+        }
+
+        .transition-all {
+            transition: all 0.3s ease;
         }
 
         main {
-            flex: 1; /* Allows main to take up available space */
+            flex: 1;
+            /* Allows main to take up available space */
         }
     </style>
     {% block extra_head %}{% endblock %}
 </head>
 
-<body>
-       <nav class="navbar navbar-expand-lg navbar-dark fixed-top shadow-sm">
+<body class="d-flex flex-column min-vh-100">
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top shadow-sm">
         <div class="container-fluid px-5">
             <a class="navbar-brand fw-bold d-flex align-items-center"
-               href="{% if user.is_authenticated and user.groups.all.0.name == 'professor' %}{% url 'professor_dashboard' %}{% else %}{% url 'home' %}{% endif %}">
+                href="{% if user.is_authenticated and user.groups.all.0.name == 'professor' %}{% url 'professor_dashboard' %}{% else %}{% url 'home' %}{% endif %}">
                 <i class="bi bi-mortarboard-fill me-2 fs-4 text-info"></i>
                 <span class="tracking-wide">Birbou<span class="text-info">LMS</span></span>
             </a>
 
-            <button class="navbar-toggler border-0 shadow-none" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <button class="navbar-toggler border-0 shadow-none" type="button" data-bs-toggle="collapse"
+                data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
             </button>
 
             <div class="collapse navbar-collapse" id="navbarNav">
                 <div class="navbar-nav ms-auto align-items-center gap-3">
                     {% if user.is_authenticated %}
-                        {% if user.groups.all.0.name == "professor" %}
-                            <a class="nav-link px-3" href="{% url 'professor_dashboard' %}">
-                                <i class="bi bi-speedometer2 me-1"></i> Dashboard
-                            </a>
-                        {% else %}
-                            <a class="nav-link px-3" href="{% url 'home' %}">
-                                <i class="bi bi-house-door me-1"></i> Home
-                            </a>
-                        {% endif %}
-
-                        <div class="vr text-white opacity-25 mx-2 d-none d-lg-block"></div>
-
-                        <div class="dropdown">
-                            <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" role="button" data-bs-toggle="dropdown">
-                                <div class="avatar rounded-circle d-flex align-items-center justify-content-center text-white fw-bold me-2" style="width: 32px; height: 32px;">
-                                    {{ user.username|slice:":1"|upper }}
-                                </div>
-                                <span class="fw-medium text-white">{{ user.username }}</span>
-                            </a>
-                            <ul class="dropdown-menu dropdown-menu-dark dropdown-menu-end shadow-lg p-2 rounded-3">
-                                <li><span class="dropdown-header text-uppercase small text-secondary">Signed in as {{ user.groups.all.0.name|default:"User" }}</span></li>
-                                <li><hr class="dropdown-divider border-secondary opacity-25"></li>
-                                {% if user.is_staff %}
-                                    <li><a class="dropdown-item rounded-2" href="/admin/"><i class="bi bi-shield-lock me-2"></i>Admin Panel</a></li>
-                                {% endif %}
-                                <li>
-                                    <form action="{% url 'logout' %}" method="post" class="m-0">
-                                        {% csrf_token %}
-                                        <button type="submit" class="dropdown-item rounded-2 text-danger">
-                                            <i class="bi bi-box-arrow-right me-2"></i>Logout
-                                        </button>
-                                    </form>
-                                </li>
-                            </ul>
-                        </div>
+                    {% if user.groups.all.0.name == "professor" %}
+                    <a class="nav-link px-3" href="{% url 'professor_dashboard' %}">
+                        <i class="bi bi-speedometer2 me-1"></i> Dashboard
+                    </a>
                     {% else %}
-                        <a class="nav-link fw-medium" href="{% url 'login' %}">Login</a>
-                        <a class="btn btn-info rounded-pill px-4 fw-bold shadow-sm" href="{% url 'register' %}">Get Started</a>
+                    <a class="nav-link px-3" href="{% url 'home' %}">
+                        <i class="bi bi-house-door me-1"></i> Home
+                    </a>
+                    <a class="nav-link px-3" href="{% url 'my_courses' %}">
+                        <i class="bi bi-journal-bookmark-fill me-1"></i> My Courses
+                    </a>
+                    {% endif %}
+
+                    <div class="vr text-white opacity-25 mx-2 d-none d-lg-block"></div>
+
+                    <div class="dropdown">
+                        <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" role="button"
+                            data-bs-toggle="dropdown">
+                            <div class="avatar rounded-circle d-flex align-items-center justify-content-center text-white fw-bold me-2"
+                                style="width: 32px; height: 32px;">
+                                {{ user.username|slice:":1"|upper }}
+                            </div>
+                            <span class="fw-medium text-white">{{ user.username }}</span>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-dark dropdown-menu-end shadow-lg p-2 rounded-3">
+                            <li>
+                                <span class="dropdown-header text-uppercase small text-secondary">
+                                    Signed in as
+                                    {% if user.is_superuser %}Admin
+                                    {% elif user.groups.all.0.name == 'professor' %}Professor
+                                    {% else %}Student{% endif %}
+                                </span>
+                            </li>
+                            <li>
+                                <hr class="dropdown-divider border-secondary opacity-25">
+                            </li>
+                            {% if user.is_staff %}
+                            <li><a class="dropdown-item rounded-2" href="/admin/"><i
+                                        class="bi bi-shield-lock me-2"></i>Admin Panel</a></li>
+                            {% endif %}
+                            <li>
+                                <form action="{% url 'logout' %}" method="post" class="m-0">
+                                    {% csrf_token %}
+                                    <button type="submit" class="dropdown-item rounded-2 text-danger">
+                                        <i class="bi bi-box-arrow-right me-2"></i>Logout
+                                    </button>
+                                </form>
+                            </li>
+                        </ul>
+                    </div>
+                    {% else %}
+                    <a class="nav-link fw-medium" href="{% url 'login' %}">Login</a>
+                    <a class="btn btn-info rounded-pill px-4 fw-bold shadow-sm" href="{% url 'register' %}">Get
+                        Started</a>
                     {% endif %}
                 </div>
             </div>
@@ -130,9 +164,52 @@
     </div>
     {% endif %}
 
-    <main class="mb-5">
+    <main class="flex-grow-1">
         {% block content %}{% endblock %}
     </main>
 
+    <footer class="mt-5 pt-5 pb-3 text-light border-top border-secondary border-opacity-25 bg-dark">
+        <div class="container">
+            <div class="row gy-4 justify-content-between">
+                <div class="col-md-6">
+                    <h5 class="text-white mb-3 d-flex align-items-center">
+                        <i class="bi bi-mortarboard-fill me-2 text-info"></i>
+                        Birbou<span class="text-info">LMS</span>
+                    </h5>
+                    <p class="small text-light pe-md-4" style="opacity: 0.8;">
+                        Ενδυναμώνουμε την εκπαίδευση μέσω της σύγχρονης τεχνολογίας. Γίνετε μέλος της πλατφόρμας μας για
+                        μια απρόσκοπτη εμπειρία μάθησης και διδασκαλίας.
+                    </p>
+                    <div class="d-flex gap-3 mt-3">
+                        <a href="https://github.com/GeorgeStyl/Project-Birbou"
+                            class="text-light text-decoration-none hover-info transition-all" target="_blank"><i
+                                class="bi bi-github fs-5"></i> GitHub Repository</a>
+                    </div>
+                </div>
+
+                <div class="col-md-4 d-flex flex-column align-items-md-end text-md-end">
+                    <h6 class="text-white mb-3 text-uppercase tracking-wide small">Γρηγοροι Συνδεσμοι</h6>
+                    <ul class="list-unstyled small d-flex flex-column gap-2 mb-0">
+                        <li><a href="/" class="text-decoration-none text-light hover-info transition-all">Αρχική <i
+                                    class="bi bi-chevron-left small ms-1 d-none d-md-inline"></i></a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <hr class="mt-5 mb-4 border-secondary border-opacity-25">
+
+            <div class="row align-items-center small">
+                <div class="col-md-4 text-center text-md-start mb-2 mb-md-0 text-light" style="opacity: 0.8;">
+                    &copy; 2026 Birbou LMS. Όλα τα δικαιώματα διατηρούνται.
+                </div>
+                <div class="col-md-8 text-center text-md-end text-light d-flex justify-content-center justify-content-md-end align-items-center gap-1"
+                    style="opacity: 0.8;">
+                    Powered by <i class="bi bi-heart-fill text-danger fs-6 heartbeat mx-1"></i> Γιάννης Αποστολόπουλος,
+                    Παναγιώτης Μπεκιάρης, Γιώργος Στυλιανόπουλος, Χρήστος Τζαμπάζης
+                </div>
+            </div>
+        </div>
+    </footer>
 </body>
+
 </html>

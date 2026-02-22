@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container d-flex justify-content-center align-items-center" style="min-height: 60vh;">
+    <div class="card bg-dark text-white border-warning shadow-lg"
+        style="border-radius: 15px; width: 100%; max-width: 500px;">
+        <div class="card-body text-center p-5">
+            <i class="bi bi-lock-fill text-warning" style="font-size: 5rem;"></i>
+            <h2 class="fw-bold mt-4 mb-3">Course Locked</h2>
+            <p class="text-secondary mb-4">
+                The course <strong>{{ course.title }}</strong> is private and is not currently accepting password
+                entries.
+            </p>
+            <p class="text-secondary small mb-4">
+                Please contact the course instructor ({{
+                course.professor.get_full_name|default:course.professor.username }}) for access.
+            </p>
+            <a href="{% url 'home' %}" class="btn btn-warning fw-bold px-4 py-2 rounded-pill shadow-sm">
+                <i class="bi bi-arrow-left me-2"></i>Return Home
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}
